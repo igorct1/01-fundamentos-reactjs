@@ -1,9 +1,11 @@
-import { Avatar } from './Avatar';
-import { Comment } from './Comment';
-import styles from './Post.module.css';
-
+import { FormEvent, useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+
+import { Comment } from './Comment';
+import { Avatar } from './Avatar';
+
+import styles from './Post.module.css';
 
 interface Author {
 	name: string;
@@ -23,6 +25,15 @@ interface PostProps {
 }
 
 export function Post({ author, content, publishedAt }: PostProps) {
+	const [comments, setComments] = useState(['Post muito massa, hein?']);
+	const [newCommentText, setNewCommentText] = useState('');
+
+	function handleNewComment(event: FormEvent) {
+		event.preventDefault();
+		setComments((prevComments) => [...prevComments, newCommentText]);
+		setNewCommentText('');
+	}
+
 	const publishedDateFormatted = format(
 		publishedAt,
 		"d 'de' LLLL 'às' HH:mm'h'",
@@ -30,10 +41,12 @@ export function Post({ author, content, publishedAt }: PostProps) {
 			locale: ptBR,
 		},
 	);
+
 	const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
 		locale: ptBR,
 		addSuffix: true,
 	});
+
 	return (
 		<article className={styles.post}>
 			<header>
@@ -60,18 +73,22 @@ export function Post({ author, content, publishedAt }: PostProps) {
 					}
 				})}
 			</div>
-			<form className={styles.commentForm}>
+			<form className={styles.commentForm} onSubmit={handleNewComment}>
 				<strong>Deixe seu feedback</strong>
-				<textarea placeholder="Deixe um comentário" />
+				<textarea
+					placeholder="Deixe um comentário"
+					value={newCommentText}
+					onChange={({ target }) => setNewCommentText(target.value)}
+				/>
 
 				<div className={styles.buttonDiv}>
 					<button type="submit">Publicar</button>
 				</div>
 			</form>
 			<div className={styles.commentList}>
-				<Comment />
-				<Comment />
-				<Comment />
+				{comments.map((comment) => (
+					<Comment content={comment} />
+				))}
 			</div>
 		</article>
 	);
