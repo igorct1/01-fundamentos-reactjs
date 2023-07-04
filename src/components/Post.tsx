@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, InvalidEvent } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
@@ -55,6 +55,10 @@ export function Post({ author, content, publishedAt }: PostProps) {
 		addSuffix: true,
 	});
 
+	function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
+		event.target.setCustomValidity('Esse campo é obrigatório!');
+	}
+
 	return (
 		<article className={styles.post}>
 			<header>
@@ -91,10 +95,17 @@ export function Post({ author, content, publishedAt }: PostProps) {
 					placeholder="Deixe um comentário"
 					value={newCommentText}
 					onChange={({ target }) => setNewCommentText(target.value)}
+					required
+					onInvalid={handleNewCommentInvalid}
 				/>
 
 				<div className={styles.buttonDiv}>
-					<button type="submit">Publicar</button>
+					<button
+						disabled={newCommentText.length === 0}
+						type="submit"
+					>
+						Publicar
+					</button>
 				</div>
 			</form>
 			<div className={styles.commentList}>
