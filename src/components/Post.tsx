@@ -2,33 +2,63 @@ import { Avatar } from './Avatar';
 import { Comment } from './Comment';
 import styles from './Post.module.css';
 
-export function Post() {
+import { format, formatDistanceToNow } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
+
+interface Author {
+	name: string;
+	role: string;
+	avatarUrl: string;
+}
+
+interface Content {
+	type: string;
+	content: string;
+}
+
+interface PostProps {
+	author: Author;
+	publishedAt: Date;
+	content: Content[];
+}
+
+export function Post({ author, content, publishedAt }: PostProps) {
+	const publishedDateFormatted = format(
+		publishedAt,
+		"d 'de' LLLL 'às' HH:mm'h'",
+		{
+			locale: ptBR,
+		},
+	);
+	const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
+		locale: ptBR,
+		addSuffix: true,
+	});
 	return (
 		<article className={styles.post}>
 			<header>
 				<div className={styles.author}>
-					<Avatar src="https://github.com/igorct1.png" />
+					<Avatar src={author.avatarUrl} />
 					<div className={styles.authorInfo}>
-						<strong>Igor Tozetti</strong>
-						<span>Web Developer</span>
+						<strong>{author.name}</strong>
+						<span>{author.role}</span>
 					</div>
 				</div>
-				<time dateTime="" title="11 de Maio às 08:13h">
-					Publicado há 1h
+				<time
+					dateTime={publishedAt.toISOString()}
+					title={publishedDateFormatted}
+				>
+					{publishedDateRelativeToNow}
 				</time>
 			</header>
 			<div className={styles.content}>
-				<p>Fala galeraa!</p>
-				<p>
-					Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-					Optio ipsum reiciendis qui, deserunt atque totam.
-				</p>
-				<a href="">jane.design/doctorcare</a>
-				<ul>
-					<a href="">#novoprojeto</a>
-					<a href="">#nlw</a>
-					<a href="">#rocketseat</a>
-				</ul>
+				{content.map((item) => {
+					if (item.type === 'paragraph') {
+						return <p>{item.content}</p>;
+					} else if (item.type === 'link') {
+						return <a href="#">{item.content}</a>;
+					}
+				})}
 			</div>
 			<form className={styles.commentForm}>
 				<strong>Deixe seu feedback</strong>
