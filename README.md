@@ -14,7 +14,7 @@ Ignite Feed | Rede social.
 **Clone o repositório**
 
 ```bash
-$ git clone https://github.com/igorct1/dogs-ts.git](https://github.com/igorct1/01-fundamentos-reactjs.git
+$ git clone https://github.com/igorct1/01-fundamentos-reactjs.git
 ```
 
 **Instale as dependências**
